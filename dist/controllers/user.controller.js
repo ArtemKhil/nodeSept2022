@@ -15,8 +15,7 @@ class UserController {
     }
     async getById(req, res, next) {
         try {
-            const { userId } = req.params;
-            const user = await user_service_1.userService.getById(userId);
+            const { user } = res.locals;
             return res.json(user);
         }
         catch (e) {
@@ -39,11 +38,8 @@ class UserController {
     async update(req, res, next) {
         try {
             const { userId } = req.params;
-            const userForUpdate = req.body;
-            const updatedUser = await User_model_1.User.updateOne({ _id: userId }, { ...userForUpdate });
-            return res
-                .status(200)
-                .json({ message: "User has been updated", data: updatedUser });
+            const updatedUser = await User_model_1.User.findByIdAndUpdate(userId, { ...req.body }, { new: true });
+            return res.status(201).json(updatedUser);
         }
         catch (e) {
             next(e);
@@ -53,7 +49,7 @@ class UserController {
         try {
             const { userId } = req.params;
             await User_model_1.User.deleteOne({ _id: userId });
-            return res.status(204).json({ message: "User deleted" });
+            return res.sendStatus(204);
         }
         catch (e) {
             next(e);

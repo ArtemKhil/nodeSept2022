@@ -7,12 +7,28 @@ const router = Router();
 
 router.get("/", userController.getAll);
 
-router.post("/", userController.create);
+router.post("/", userMiddleware.isUserValidForCreate, userController.create);
 
-router.get("/:userId", userMiddleware.getByIdAndThrow, userController.getById);
+router.get(
+  "/:userId",
+  userMiddleware.isUserIdValid,
+  userMiddleware.getByIdOrThrow,
+  userController.getById
+);
 
-router.put("/:userId", userController.update);
+router.put(
+  "/:userId",
+  userMiddleware.isUserIdValid,
+  userMiddleware.isUserValidForUpdate,
+  userMiddleware.getByIdOrThrow,
+  userController.update
+);
 
-router.delete("/:userId", userController.delete);
+router.delete(
+  "/:userId",
+  userMiddleware.isUserIdValid,
+  userMiddleware.getByIdOrThrow,
+  userController.delete
+);
 
 export const userRouter = router;

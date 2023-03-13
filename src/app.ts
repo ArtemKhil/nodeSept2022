@@ -13,7 +13,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/users", userRouter);
 
 app.use((err: IError, req: Request, res: Response, next: NextFunction) => {
-  const status = err.status;
+  const status = err.status || 500;
 
   return res.status(status).json({ message: err.message, status });
 });
@@ -23,6 +23,6 @@ app.get("/welcome", (req: Request, res: Response) => {
 });
 
 app.listen(configs.PORT, () => {
-  mongoose.connect(configs.DB_URL);
+  mongoose.connect(configs.DB_URL).then();
   console.log(`Server listen ${configs.PORT}`);
 });
