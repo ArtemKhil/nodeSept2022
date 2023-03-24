@@ -38,7 +38,6 @@ class UserMiddleware {
       next(e);
     }
   }
-
   public getDynamicallyAndThrow(
     fieldName: string,
     from: "body" | "query" | "params" = "body",
