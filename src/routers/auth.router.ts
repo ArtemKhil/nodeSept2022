@@ -25,6 +25,12 @@ router.post(
 );
 
 router.post(
+  "/refresh",
+  authMiddleware.checkRefreshToken,
+  authController.refresh
+);
+
+router.post(
   "/password/change",
   commonMiddleware.isBodyValid(UserValidator.changeUserPassword),
   authMiddleware.checkAccessToken,
@@ -32,9 +38,15 @@ router.post(
 );
 
 router.post(
-  "/refresh",
-  authMiddleware.checkRefreshToken,
-  authController.refresh
+  "/password/forgot",
+  userMiddleware.getDynamicallyOrThrow("email"),
+  authController.forgotPassword
+);
+
+router.put(
+  `/password/forgot/:token`,
+  authMiddleware.checkActionForgotPassToken,
+  authController.setForgotPassword
 );
 
 export const authRouter = router;

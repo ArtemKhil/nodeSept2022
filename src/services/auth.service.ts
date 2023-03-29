@@ -1,6 +1,6 @@
-import { EEmailActions, ESmsActionEnum } from "../enums";
+import { EActionTokenType, EEmailActions, ESmsActionEnum } from "../enums";
 import { ApiError } from "../errors";
-import { Token, User } from "../models";
+import { ActionToken, Token, User } from "../models";
 import {
   emailService,
   passwordService,
@@ -84,16 +84,54 @@ class AuthService {
     oldPassword: string,
     newPassword: string
   ): Promise<void> {
-    const user = await User.findById(userId);
+    try {
+      const user = await User.findById(userId);
 
-    const isMatched = await passwordService.compare(oldPassword, user.password);
+      const isMatched = await passwordService.compare(
+        oldPassword,
+        user.password
+      );
 
-    if (!isMatched) {
-      throw new ApiError("Old password is invalid", 400);
+      if (!isMatched) {
+        throw new ApiError("Old password is invalid", 400);
+      }
+
+      const hashedPassword = await passwordService.hash(newPassword);
+      await User.updateOne({ _id: user._id }, { password: hashedPassword });
+    } catch (e) {
+      throw new ApiError(e.message, e.status);
     }
+  }
+  public async forgotPassword(user: IUser): Promise<void> {
+    try {
+      const actionToken = tokenService.generateActionToken(
+        { _id: user._id },
+        EActionTokenType.forgot
+      );
 
-    const hashedPassword = await passwordService.hash(newPassword);
-    await User.updateOne({ _id: user._id }, { password: hashedPassword });
+      await ActionToken.create({
+        actionToken,
+        tokenType: EActionTokenType.forgot,
+        _user_id: user._id,
+      });
+
+      await emailService.sendMail(
+        "artemkhilchenko09@gmail.com",
+        EEmailActions.FORGOT_PASSWORD,
+        { token: actionToken }
+      );
+    } catch (e) {
+      throw new ApiError(e.message, e.status);
+    }
+  }
+  public async setForgotPassword(password: string, id: string): Promise<void> {
+    try {
+      const hashedPassword = await passwordService.hash(password);
+
+      await User.updateOne({ _id: id }, { password: hashedPassword });
+    } catch (e) {
+      throw new ApiError(e.message, e.status);
+    }
   }
 }
 
