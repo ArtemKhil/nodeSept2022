@@ -1,4 +1,9 @@
-import { EActionTokenType, EEmailActions, ESmsActionEnum } from "../enums";
+import {
+  EActionTokenType,
+  EEmailActions,
+  ESmsActionEnum,
+  EUserStatus,
+} from "../enums";
 import { ApiError } from "../errors";
 import { ActionToken, Token, User } from "../models";
 import {
@@ -129,6 +134,49 @@ class AuthService {
       const hashedPassword = await passwordService.hash(password);
 
       await User.updateOne({ _id: id }, { password: hashedPassword });
+
+      await ActionToken.deleteMany({
+        _user_id: id,
+        tokenType: EActionTokenType.forgot,
+      });
+    } catch (e) {
+      throw new ApiError(e.message, e.status);
+    }
+  }
+  public async sendActivateToken(user: IUser): Promise<void> {
+    try {
+      const actionToken = tokenService.generateActionToken(
+        { _id: user._id },
+        EActionTokenType.activate
+      );
+
+      await ActionToken.create({
+        actionToken,
+        tokenType: EActionTokenType.activate,
+        _user_id: user._id,
+      });
+
+      await emailService.sendMail(
+        "artemkhilchenko09@gmail.com",
+        EEmailActions.ACTIVATE,
+        { token: actionToken }
+      );
+    } catch (e) {
+      throw new ApiError(e.messsage, e.status);
+    }
+  }
+  public async activate(userId: string): Promise<void> {
+    try {
+      await Promise.all([
+        User.updateOne(
+          { _id: userId },
+          { $set: { status: EUserStatus.active } }
+        ),
+        ActionToken.deleteMany({
+          _user_id: userId,
+          tokenType: EActionTokenType.activate,
+        }),
+      ]);
     } catch (e) {
       throw new ApiError(e.message, e.status);
     }
