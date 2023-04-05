@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const configs_1 = require("./configs");
+const crons_1 = require("./crons");
 const routers_1 = require("./routers");
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
@@ -21,5 +22,6 @@ app.get("/welcome", (req, res) => {
 });
 app.listen(configs_1.configs.PORT, () => {
     mongoose_1.default.connect(configs_1.configs.DB_URL).then();
+    (0, crons_1.cronRunner)();
     console.log(`Server listen ${configs_1.configs.PORT}`);
 });
