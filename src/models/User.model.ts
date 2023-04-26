@@ -24,6 +24,10 @@ const userSchema = new Schema(
       type: Number,
       required: false,
     },
+    avatar: {
+      type: String,
+      required: false,
+    },
     gender: {
       type: String,
       enum: EGenders,

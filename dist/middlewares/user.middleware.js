@@ -13,7 +13,7 @@ class UserMiddleware {
             if (!user) {
                 throw new errors_1.ApiError("User not found", 422);
             }
-            res.locals = { user };
+            res.locals.user = user;
             next();
         }
         catch (e) {

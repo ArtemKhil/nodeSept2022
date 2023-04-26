@@ -23,6 +23,10 @@ const userSchema = new mongoose_1.Schema({
         type: Number,
         required: false,
     },
+    avatar: {
+        type: String,
+        required: false,
+    },
     gender: {
         type: String,
         enum: enums_1.EGenders,
