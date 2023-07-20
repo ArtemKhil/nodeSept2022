@@ -62,19 +62,6 @@ class UserMiddleware {
             }
         };
     }
-    async isUserValidForCreate(req, res, next) {
-        try {
-            const { error, value } = validators_1.UserValidator.createUser.validate(req.body);
-            if (error) {
-                throw new errors_1.ApiError(error.message, 400);
-            }
-            req.body = value;
-            next();
-        }
-        catch (e) {
-            next(e);
-        }
-    }
     async isUserValidForUpdate(req, res, next) {
         try {
             const { error, value } = validators_1.UserValidator.updateUser.validate(req.body);
@@ -91,18 +78,6 @@ class UserMiddleware {
     async isUserValidForLogin(req, res, next) {
         try {
             const { error } = validators_1.UserValidator.loginUser.validate(req.body);
-            if (error) {
-                throw new errors_1.ApiError(error.message, 400);
-            }
-            next();
-        }
-        catch (e) {
-            next(e);
-        }
-    }
-    async isUserValidForChangePassword(req, res, next) {
-        try {
-            const { error } = validators_1.UserValidator.changeUserPassword.validate(req.body);
             if (error) {
                 throw new errors_1.ApiError(error.message, 400);
             }

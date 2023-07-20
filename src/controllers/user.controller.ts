@@ -1,10 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-import { UploadedFile } from "express-fileupload";
 
 import { userMapper } from "../mappers";
 import { User } from "../models";
-import { IQuery, userService } from "../services";
-import { ICommonResponse, IUser } from "../types";
+import { userService } from "../services";
+import { IUser } from "../types";
 
 class UserController {
   public async getAll(
@@ -13,7 +12,7 @@ class UserController {
     next: NextFunction
   ): Promise<Response<IUser[]>> {
     try {
-      const users = await userService.getWithPagination(req.query as IQuery);
+      const users = await userService.getAll();
       return res.json(users);
     } catch (e) {
       next(e);
@@ -30,23 +29,6 @@ class UserController {
       const response = userMapper.toResponse(user);
 
       return res.json(response);
-    } catch (e) {
-      next(e);
-    }
-  }
-  public async create(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<Response<ICommonResponse<IUser>>> {
-    try {
-      const body = req.body;
-      const user = await User.create(body);
-
-      return res.status(201).json({
-        message: "User created",
-        data: user,
-      });
     } catch (e) {
       next(e);
     }
@@ -81,40 +63,6 @@ class UserController {
       await User.deleteOne({ _id: userId });
 
       return res.sendStatus(204);
-    } catch (e) {
-      next(e);
-    }
-  }
-  public async uploadAvatar(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<Response<IUser>> {
-    try {
-      const userEntity = res.locals.user as IUser;
-      const avatar = req.files.avatar as UploadedFile;
-
-      const user = await userService.uploadAvatar(avatar, userEntity);
-
-      const response = userMapper.toResponse(user);
-      return res.status(201).json(response);
-    } catch (e) {
-      next(e);
-    }
-  }
-  public async deleteAvatar(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<Response<IUser>> {
-    try {
-      const userEntity = res.locals.user as IUser;
-
-      const user = await userService.deleteAvatar(userEntity);
-
-      const response = userMapper.toResponse(user);
-
-      return res.status(201).json(response);
     } catch (e) {
       next(e);
     }

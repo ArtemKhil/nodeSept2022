@@ -1,7 +1,8 @@
 import * as Joi from "joi";
 
 import { regexConstants } from "../constants";
-import { EGenders } from "../enums";
+import { EUserRole } from "../enums";
+
 export class UserValidator {
   private static fullName = Joi.string().min(2).max(50).trim();
   private static email = Joi.string()
@@ -9,29 +10,24 @@ export class UserValidator {
     .max(50)
     .lowercase()
     .trim();
-  private static password = Joi.string().regex(regexConstants.PASSWORD);
-  private static gender = Joi.valid(...Object.values(EGenders));
-  private static phone = Joi.string().regex(regexConstants.PHONE);
-  public static createUser = Joi.object({
+  private static password = Joi.string();
+  private static role = Joi.valid(...Object.values(EUserRole));
+
+  public static registerUser = Joi.object({
     name: this.fullName.required(),
     email: this.email.required(),
     password: this.password.required(),
-    gender: this.gender.required(),
-    phone: this.phone.required(),
-  });
-  public static updateUser = Joi.object({
-    name: this.fullName,
-    gender: this.gender,
+    role: this.role.required(),
   });
   public static loginUser = Joi.object({
     email: this.email.required(),
     password: this.password.required(),
   });
-  static emailValidator = Joi.object({
-    email: this.email.required(),
+  public static updateUser = Joi.object({
+    name: this.fullName,
+    role: this.role,
   });
-  public static changeUserPassword = Joi.object({
-    oldPassword: this.password.required(),
-    newPassword: this.password.required(),
-  });
+  // static emailValidator = Joi.object({
+  //   email: this.email.required(),
+  // });
 }

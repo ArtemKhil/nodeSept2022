@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 
-import { EActionTokenType, ETokenType } from "../enums";
+import { ETokenType } from "../enums";
 import { ApiError } from "../errors";
-import { ActionToken, OldPassword, Token } from "../models";
-import { passwordService, tokenService } from "../services";
+import { Token } from "../models";
+import { tokenService } from "../services";
 
 class AuthMiddleware {
   public async checkAccessToken(
@@ -56,62 +56,6 @@ class AuthMiddleware {
       }
 
       req.res.locals = { tokenInfo, jwtPayload };
-      next();
-    } catch (e) {
-      next(e);
-    }
-  }
-  public checkActionToken(type: EActionTokenType) {
-    return async (req: Request, res: Response, next: NextFunction) => {
-      try {
-        const actionToken = req.params.token;
-        if (!actionToken) {
-          throw new ApiError("No token", 401);
-        }
-
-        const jwtPayload = tokenService.checkActionToken(actionToken, type);
-
-        const tokenInfo = await ActionToken.findOne({ actionToken });
-        if (!tokenInfo) {
-          throw new ApiError("Token not valid", 401);
-        }
-
-        req.res.locals = { jwtPayload, tokenInfo };
-        next();
-      } catch (e) {
-        next(e);
-      }
-    };
-  }
-  public async checkOldPassword(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
-    try {
-      const { body } = req;
-      const { tokenInfo } = req.res.locals;
-
-      const oldPasswords = await OldPassword.find({
-        _user_id: tokenInfo._user_id,
-      });
-      if (!oldPasswords) return next();
-
-      await Promise.all(
-        oldPasswords.map(async (record) => {
-          const isMatched = await passwordService.compare(
-            body.password,
-            record.password
-          );
-          if (isMatched) {
-            throw new ApiError(
-              "Your new password has been already declared",
-              409
-            );
-          }
-        })
-      );
-
       next();
     } catch (e) {
       next(e);

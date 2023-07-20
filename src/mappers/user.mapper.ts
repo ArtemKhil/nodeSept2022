@@ -1,4 +1,3 @@
-import { configs } from "../configs";
 import { IUser } from "../types";
 
 export class UserMapper {
@@ -6,11 +5,7 @@ export class UserMapper {
     return {
       _id: user._id,
       name: user.name,
-      email: user.email,
-      gender: user.gender,
-      age: user.age || null,
-      avatar: user.avatar ? `${configs.AWS_S3_URL}/${user.avatar}` : null,
-      phone: user.phone,
+      role: user.role,
     };
   }
   public toManyResponse(users: IUser[]) {

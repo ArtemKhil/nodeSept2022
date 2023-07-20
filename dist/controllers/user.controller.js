@@ -7,7 +7,7 @@ const services_1 = require("../services");
 class UserController {
     async getAll(req, res, next) {
         try {
-            const users = await services_1.userService.getWithPagination(req.query);
+            const users = await services_1.userService.getAll();
             return res.json(users);
         }
         catch (e) {
@@ -19,19 +19,6 @@ class UserController {
             const { user } = res.locals;
             const response = mappers_1.userMapper.toResponse(user);
             return res.json(response);
-        }
-        catch (e) {
-            next(e);
-        }
-    }
-    async create(req, res, next) {
-        try {
-            const body = req.body;
-            const user = await models_1.User.create(body);
-            return res.status(201).json({
-                message: "User created",
-                data: user,
-            });
         }
         catch (e) {
             next(e);
@@ -53,29 +40,6 @@ class UserController {
             const { userId } = req.params;
             await models_1.User.deleteOne({ _id: userId });
             return res.sendStatus(204);
-        }
-        catch (e) {
-            next(e);
-        }
-    }
-    async uploadAvatar(req, res, next) {
-        try {
-            const userEntity = res.locals.user;
-            const avatar = req.files.avatar;
-            const user = await services_1.userService.uploadAvatar(avatar, userEntity);
-            const response = mappers_1.userMapper.toResponse(user);
-            return res.status(201).json(response);
-        }
-        catch (e) {
-            next(e);
-        }
-    }
-    async deleteAvatar(req, res, next) {
-        try {
-            const userEntity = res.locals.user;
-            const user = await services_1.userService.deleteAvatar(userEntity);
-            const response = mappers_1.userMapper.toResponse(user);
-            return res.status(201).json(response);
         }
         catch (e) {
             next(e);
