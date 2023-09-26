@@ -27,7 +27,4 @@ export class UserValidator {
     name: this.fullName,
     role: this.role,
   });
-  // static emailValidator = Joi.object({
-  //   email: this.email.required(),
-  // });
 }

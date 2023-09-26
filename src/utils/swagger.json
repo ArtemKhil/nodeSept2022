@@ -5,9 +5,43 @@
     "title": "Final project"
   },
   "paths": {
+    "/users": {
+      "get": {
+        "description": "Get all users",
+        "tags": [
+          "User"
+        ],
+        "operationId": "getAllUsers",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/SingleUser"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ApiError"
+            }
+          }
+        }
+      }
+    },
     "/users/{userId}": {
       "get": {
-        "description": "Get user by ID",
+        "description": "Get user by id",
         "tags": [
           "User"
         ],
@@ -30,7 +64,16 @@
           "200": {
             "description": "Successful response",
             "schema": {
-              "$ref": "#/definitions/SingleUser"
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "Artem"
+                },
+                "role": {
+                  "type": "string",
+                  "example": "admin"
+                }
+              }
             }
           },
           "400": {
@@ -49,17 +92,145 @@
         "operationId": "updateUserById",
         "parameters": [
           {
-            "name": "role",
+            "name": "userId",
+            "type": "string",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "data",
             "required": false,
             "type": "string",
             "in": "formData"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "required": true
           }
         ],
         "responses": {
           "200": {
             "description": "User has been updated",
             "schema": {
-              "$ref": "#/definitions/SingleUser"
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "John"
+                },
+                "role": {
+                  "type": "string",
+                  "example": "manager"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ApiError"
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete user by id",
+        "tags": [
+          "User"
+        ],
+        "operationId": "deleteUserById",
+        "parameters": [
+          {
+            "name": "userId",
+            "type": "string",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ApiError"
+            }
+          }
+        }
+      }
+    },
+    "/orders": {
+      "get": {
+        "description": "Get all orders",
+        "tags": [
+          "Order"
+        ],
+        "operationId": "getAllOrders",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "A page number within the paginated result set.",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "schema": {
+              "$ref": "#/definitions/PaginatedOrder"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ApiError"
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Create a new order",
+        "tags": [
+          "Order"
+        ],
+        "operationId": "createOrder",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SingleOrder"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful response",
+            "schema": {
+              "$ref": "#/definitions/SingleOrder"
             }
           },
           "400": {
@@ -71,21 +242,210 @@
         }
       }
     },
-    "/users": {
+    "/orders/{orderId}": {
       "get": {
-        "description": "Get all users",
+        "description": "Get order by id",
         "tags": [
-          "User"
+          "Order"
         ],
-        "operationId": "getAllUsers",
+        "operationId": "getOrderById",
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "required": true
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response",
             "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/SingleUser"
-              }
+              "$ref": "#/definitions/SingleOrder"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ApiError"
+            }
+          }
+        }
+      },
+      "put": {
+        "description": "Update order by id",
+        "tags": [
+          "Order"
+        ],
+        "operationId": "updateOrderById",
+        "parameters": [
+          {
+            "name": "orderId",
+            "type": "string",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "data",
+            "required": false,
+            "type": "string",
+            "in": "formData"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "schema": {
+              "$ref": "#/definitions/SingleOrder"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ApiError"
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete order by id",
+        "tags": [
+          "Order"
+        ],
+        "operationId": "deleteOrderById",
+        "parameters": [
+          {
+            "name": "orderId",
+            "type": "string",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ApiError"
+            }
+          }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "description": "Register user",
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "registerUser",
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/RegisterUser"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "User created",
+            "schema": {
+              "$ref": "#/definitions/RegisterUser"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ApiError"
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "description": "Login user",
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "loginUser",
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/LoginUser"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "schema": {
+              "$ref": "#/definitions/Tokens"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ApiError"
+            }
+          }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "description": "Takes a refresh type JSON web token and returns an access type JSON web token if the refresh token is valid.",
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "refreshToken",
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/TokenRefresh"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful response",
+            "schema": {
+              "$ref": "#/definitions/Tokens"
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "schema": {
+              "$ref": "#/definitions/ApiError"
             }
           }
         }
@@ -102,6 +462,90 @@
         "message": {
           "type": "string",
           "example": "Bad request"
+        }
+      }
+    },
+    "TokenRefresh": {
+      "required": [
+        "refreshToken"
+      ],
+      "type": "object",
+      "properties": {
+        "refreshToken": {
+          "title": "RefreshToken",
+          "type": "string",
+          "minLength": 1
+        },
+        "accessToken": {
+          "title": "AccessToken",
+          "type": "string",
+          "readOnly": true,
+          "minLength": 1
+        }
+      }
+    },
+    "Tokens": {
+      "type": "object",
+      "properties": {
+        "accessToken": {
+          "title": "AccessToken",
+          "type": "string",
+          "readOnly": true
+        },
+        "refreshToken": {
+          "title": "RefreshToken",
+          "type": "string"
+        }
+      }
+    },
+    "RegisterUser": {
+      "required": [
+        "name",
+        "email",
+        "password",
+        "role"
+      ],
+      "type": "object",
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string",
+          "minLength": 2,
+          "example": "Artem Khil"
+        },
+        "email": {
+          "title": "Email",
+          "type": "string",
+          "example": "artemkhil@gmail.com"
+        },
+        "password": {
+          "title": "Password",
+          "type": "string",
+          "example": "26055674Q!"
+        },
+        "role": {
+          "title": "Role",
+          "type": "string",
+          "example": "manager"
+        }
+      }
+    },
+    "LoginUser": {
+      "required": [
+        "email",
+        "password"
+      ],
+      "type": "object",
+      "properties": {
+        "email": {
+          "title": "Email",
+          "type": "string",
+          "example": "artemkhil@gmail.com"
+        },
+        "password": {
+          "title": "Password",
+          "type": "string",
+          "example": "26055674Q!"
         }
       }
     },
@@ -122,6 +566,100 @@
         "role": {
           "type": "string",
           "example": "admin"
+        }
+      }
+    },
+    "SingleOrder": {
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "Artem"
+        },
+        "surname": {
+          "type": "string",
+          "example": "Khilchenko"
+        },
+        "email": {
+          "type": "string",
+          "example": "art123@gmail.com"
+        },
+        "phone": {
+          "type": "string",
+          "example": "+447568987098"
+        },
+        "age": {
+          "type": "number",
+          "example": 23
+        },
+        "course": {
+          "type": "string",
+          "example": "FS"
+        },
+        "course_format": {
+          "type": "string",
+          "example": "online"
+        },
+        "course_type": {
+          "type": "string",
+          "example": "minimal"
+        },
+        "status": {
+          "type": "string",
+          "example": "InWork"
+        },
+        "sum": {
+          "type": "number",
+          "example": 4000
+        },
+        "already_paid": {
+          "type": "number",
+          "example": 2000
+        },
+        "manager": {
+          "type": "object",
+          "$ref": "#/definitions/SingleUser"
+        },
+        "utm": {
+          "type": "string",
+          "example": "any info"
+        },
+        "msg": {
+          "type": "string",
+          "example": "any info"
+        }
+      }
+    },
+    "PaginatedOrder": {
+      "required": [
+        "itemsCount",
+        "itemsFound",
+        "page",
+        "perPage",
+        "data"
+      ],
+      "type": "object",
+      "properties": {
+        "itemsCount": {
+          "title": "Total items",
+          "type": "integer"
+        },
+        "itemsFound": {
+          "title": "Limit items per page",
+          "type": "integer"
+        },
+        "page": {
+          "title": "Page number",
+          "type": "integer"
+        },
+        "perPage": {
+          "title": "Limit items",
+          "type": "integer"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SingleOrder"
+          }
         }
       }
     }
